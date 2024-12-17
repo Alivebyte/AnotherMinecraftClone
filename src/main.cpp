@@ -1,23 +1,17 @@
-#include <SFML/Graphics.hpp>
+//#include <SFML/Graphics.hpp>
+#include "app.h"
+using namespace amc;
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "AnotherMinecraftClone");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+    
+    App amc;
+    
+   
 
-    while (window.isOpen())
+    if (amc.Construct(800, 600, "Another Minecraft Clone"))
     {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-
-        window.clear();
-        window.draw(shape);
-        window.display();
+        amc.Run();
     }
 
     return 0;
