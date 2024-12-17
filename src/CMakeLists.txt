@@ -1,9 +1,12 @@
 file(GLOB MAIN_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/*.c"
 	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
 )
 
 add_executable(amc ${MAIN_SRC})
+target_include_directories(amc PRIVATE "${CMAKE_SOURCE_DIR}/include")
 target_link_libraries(amc PRIVATE sfml-graphics)
 target_compile_features(amc PRIVATE cxx_std_17)
 
