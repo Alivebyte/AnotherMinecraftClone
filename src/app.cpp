@@ -7,16 +7,28 @@ App::App()
 
 }
 
-typedef void(*amcProc) (void);
 
-static PROC amcGetProcAddress(LPCSTR procname)
+
+void* GetAnyGLFuncAddress(const char* name)
 {
-	return wglGetProcAddress(procname);
+	void* p = (void*)wglGetProcAddress(name);
+	if (p == 0 ||
+		(p == (void*)0x1) || (p == (void*)0x2) || (p == (void*)0x3) ||
+		(p == (void*)-1))
+	{
+		HMODULE module = LoadLibraryA("opengl32.dll");
+		p = (void*)GetProcAddress(module, name);
+	}
+
+	return p;
 }
 
 
 void App::Run()
 {
+
+	InitRender();
+
 	while (m_Window.isOpen())
 	{
 		Event event;
@@ -39,40 +51,19 @@ void App::Run()
 	}
 }
 
-void App::Render()
+
+void App::InitRender()
 {
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	float verts[] =
-	{
-		-1.0f, 1.0f, 0.0f,
-		-1.0f, -1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		1.0f, 1.0f, 0.0f
-	};
-
-	// Test draw
-
-	// Generate Vertex Buffer Object(VBO)
-	GLuint VBO;
-	glGenBuffers(1, &VBO);
 	
-	// Bind VBO to the Array Buffer
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	// Push vertex data do Array Buffer using Static Draw
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
-	
-
 	// Basic shader 
 	const char* vertexSource = R"glsl(
 		#version 150 core
 
-		in vec2 position;
+		in vec3 position;
 
 		void main()
 		{
-			glPosition = vec4(position, 1.0);
+			gl_Position = vec4(position, 1.0);
 		}
 	)glsl";
 
@@ -101,6 +92,7 @@ void App::Render()
 	{
 		char buffer[512];
 		glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
+		std::cout << "[" __FUNCTION__ "]: Vertex Shader Error: " << buffer;
 	}
 
 
@@ -115,6 +107,7 @@ void App::Render()
 	{
 		char buffer[512];
 		glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
+		std::cout << "[" __FUNCTION__ "]: Fragment Shader Error: " << buffer;
 	}
 
 	// Create shader program
@@ -125,33 +118,72 @@ void App::Render()
 	glLinkProgram(shaderProgram);
 
 	glUseProgram(shaderProgram);
-
+	m_iShaderProgram = shaderProgram;
 	// Delete the shaders as we do not require them anymore
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
+	float verts[] =
+	{
+		-0.5f, 0.5f, 0.0f,
+		-0.5f, -0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f,
+		-0.5f, 0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f,
+		0.5f, 0.5f, 0.0f
+	};
+
+	// Test draw
+
+	// Generate Vertex Buffer Object(VBO)
+	// Generate vertex array object
+	GLuint VBO, vao;
+	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &VBO);
+
+	glBindVertexArray(vao);
+	m_iVAO = vao;
+	// Bind VBO to the Array Buffer
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	// Push vertex data do Array Buffer using Static Draw
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
 	// Add vertex array attribute to the position in the shader
 	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
 	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	// Enable vertex attribute
 	glEnableVertexAttribArray(posAttrib);
+	glUseProgram(shaderProgram);
 
-	// Generate vertex array object
-	GLuint vao;
-	glGenVertexArrays(1, &vao);
+	// Empty buffers
+	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glBindVertexArray(vao);
+	// You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
+	// VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
+	glBindVertexArray(0);
 
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+void App::Render()
+{
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	
+	
+	glUseProgram(m_iShaderProgram);
+	
+	glBindVertexArray(m_iVAO);
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 bool App::Init()
 {
-	if (!gladLoadGLLoader((GLADloadproc)amcGetProcAddress))
+	if (!gladLoadGLLoader((GLADloadproc)GetAnyGLFuncAddress))
 	{
-		std::cout << "GLAD did not initialize" << std::endl;
+		std::cout << "GLAD did not initialize" << std::endl;	
+
 		return false;
 	}
 
@@ -161,11 +193,16 @@ bool App::Init()
 
 bool App::Construct(unsigned int width, unsigned int height, const char* title)
 {
+	
+	
 	m_Window.create(VideoMode(width, height),title);
 
-	if (Init())
-		return true;
+	if (!Init())
+	{
+		std::cout << "[" << __FUNCTION__ << "]: Couldn't init!" << std::endl;
+		return false;
+	}
 
-	return false;
+	return true;
 }
 
