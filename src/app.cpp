@@ -118,7 +118,6 @@ void App::InitRender()
 	glLinkProgram(shaderProgram);
 
 	glUseProgram(shaderProgram);
-	m_iShaderProgram = shaderProgram;
 	// Delete the shaders as we do not require them anymore
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
@@ -142,7 +141,6 @@ void App::InitRender()
 	glGenBuffers(1, &VBO);
 
 	glBindVertexArray(vao);
-	m_iVAO = vao;
 	// Bind VBO to the Array Buffer
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
@@ -156,13 +154,14 @@ void App::InitRender()
 	glEnableVertexAttribArray(posAttrib);
 	glUseProgram(shaderProgram);
 
-	// Empty buffers
+	
+	
 	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
 	// VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
 
 }
 void App::Render()
@@ -171,9 +170,9 @@ void App::Render()
 
 	
 	
-	glUseProgram(m_iShaderProgram);
+	//glUseProgram(m_iShaderProgram);
 	
-	glBindVertexArray(m_iVAO);
+	//glBindVertexArray(m_iVAO);
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }

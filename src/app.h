@@ -23,8 +23,6 @@ namespace amc
 	private:
 		Window m_Window;
 		ContextSettings m_ContextSettings;
-		GLuint m_iShaderProgram;
-		GLuint m_iVAO;
 	};
 }
 
