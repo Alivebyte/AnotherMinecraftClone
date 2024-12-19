@@ -74,7 +74,7 @@ void App::InitRender()
 
 		void main()
 		{
-			outColor = vec4(0.5, 0.0, 0.6, 1.0);
+			outColor = vec4(0.2, 0.9, 0.1, 1.0);
 		}
 	)glsl";
 
@@ -167,7 +167,7 @@ void App::InitRender()
 void App::Render()
 {
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	glClearColor(0.1,0.5,0.8,1.0f);
 	
 	
 	//glUseProgram(m_iShaderProgram);
