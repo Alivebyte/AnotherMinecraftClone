@@ -1,8 +1,10 @@
 #ifndef APP_H
 #define APP_H
+#include "glad/glad.h"
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
 #include <SFML/Graphics/Shader.hpp>
+
 using namespace sf;
 
 namespace amc
@@ -14,6 +16,7 @@ namespace amc
 		~App() {};
 		//void CreateContext();
 		bool Construct(unsigned int width, unsigned int height, const char* title);
+		bool Init();
 		void Render();
 		void Run();
 	private:
