@@ -12,34 +12,8 @@ App::App()
 void App::Run()
 {
 
-	InitRender();
+	//InitRender();
 
-	while (m_Window.isOpen())
-	{
-		Event event;
-		while (m_Window.pollEvent(event))
-		{
-			if (event.type == Event::Closed)
-			{
-				m_Window.close();
-			}
-
-			if (event.type == Event::Resized)
-			{
-				glViewport(0, 0, event.size.width, event.size.height);
-			}
-		}
-
-		Render();
-
-		m_Window.display();
-	}
-}
-
-
-void App::InitRender()
-{
-	
 	// Basic shader 
 	const char* vertexSource = R"glsl(
 		#version 120
@@ -102,44 +76,51 @@ void App::InitRender()
 	glLinkProgram(shaderProgram);
 
 	glUseProgram(shaderProgram);
+
+	m_ShaderProgram = shaderProgram;
 	// Delete the shaders as we do not require them anymore
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
 	float verts[] =
 	{
-		-0.5f, 0.5f, 0.0f,
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		-0.5f, 0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		0.5f, 0.5f, 0.0f
+		  0.5f,  0.5f, 0.0f,  // top right
+		  0.5f, -0.5f, 0.0f,  // bottom right
+		  -0.5f, -0.5f, 0.0f,  // bottom left
+		  -0.5f,  0.5f, 0.0f   // top left
+	};
+
+	float indices[] =
+	{
+		0, 1, 3,  // first Triangle
+		1, 2, 3   // second Triangle
 	};
 
 	// Test draw
 
 	// Generate Vertex Buffer Object(VBO)
 	// Generate vertex array object
-	GLuint VBO;
-	//glGenVertexArrays(1, &vao);
+	GLuint VBO, EBO, VAO;
+	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-
-	//glBindVertexArray(vao);
+	glGenBuffers(1, &EBO);
+	glBindVertexArray(VAO);
 	// Bind VBO to the Array Buffer
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
+
 	// Push vertex data do Array Buffer using Static Draw
 	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	// Add vertex array attribute to the position in the shader
 	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
-	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
 
 	// Enable vertex attribute
 	glEnableVertexAttribArray(posAttrib);
-	glUseProgram(shaderProgram);
-
-	
-	
+	//glUseProgram(shaderProgram);
 	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
 	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -147,18 +128,51 @@ void App::InitRender()
 	// VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
 	//glBindVertexArray(0);
 
+
+	while (m_Window.isOpen())
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(0.1f, 0.5f, 0.8f, 1.0f);
+
+		glUseProgram(shaderProgram);
+
+
+		//glBindVertexArray(VAO);
+
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		m_Window.display();
+
+		Event event;
+		while (m_Window.pollEvent(event))
+		{
+			if (event.type == Event::Closed)
+			{
+				m_Window.close();
+			}
+
+			if (event.type == Event::Resized)
+			{
+				glViewport(0, 0, event.size.width, event.size.height);
+			}
+		}
+
+		//Render();
+		
+	}
+}
+
+
+void App::InitRender()
+{
+	
+	
+
 }
 void App::Render()
 {
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.1,0.5,0.8,1.0f);
 	
-	
-	//glUseProgram(m_iShaderProgram);
-	
-	//glBindVertexArray(m_iVAO);
-
-	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 bool App::Init()

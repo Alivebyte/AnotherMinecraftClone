@@ -25,6 +25,10 @@ namespace amc
 	private:
 		Window m_Window;
 		ContextSettings m_ContextSettings;
+		GLuint m_EBO;
+		GLuint m_VBO;
+		GLuint m_VAO;
+		GLuint m_ShaderProgram;
 	};
 }
 
