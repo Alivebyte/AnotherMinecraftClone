@@ -90,7 +90,7 @@ void App::Run()
 		  -0.5f,  0.5f, 0.0f   // top left
 	};
 
-	float indices[] =
+	unsigned int indices[] =
 	{
 		0, 1, 3,  // first Triangle
 		1, 2, 3   // second Triangle
@@ -131,13 +131,14 @@ void App::Run()
 
 	while (m_Window.isOpen())
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.1f, 0.5f, 0.8f, 1.0f);
-
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		
 		glUseProgram(shaderProgram);
 
 
-		//glBindVertexArray(VAO);
+		glBindVertexArray(VAO);
 
 		//glDrawArrays(GL_TRIANGLES, 0, 6);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
