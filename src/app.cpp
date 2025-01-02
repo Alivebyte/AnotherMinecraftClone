@@ -4,7 +4,8 @@ using namespace amc;
 
 App::App()
 {
-
+	m_ContextSettings.majorVersion = 2;
+	m_ContextSettings.minorVersion = 1;
 }
 
 
@@ -43,7 +44,7 @@ void App::InitRender()
 	const char* vertexSource = R"glsl(
 		#version 120
 
-		in vec3 position;
+		attribute vec3 position;
 
 		void main()
 		{
@@ -54,11 +55,10 @@ void App::InitRender()
 	const char* fragSource = R"glsl(
 		#version 120
 
-		varying out vec4 outColor;
 
 		void main()
 		{
-			outColor = vec4(0.2, 0.9, 0.1, 1.0);
+			gl_FragColor = vec4(0.2, 0.9, 0.1, 1.0);
 		}
 	)glsl";
 
@@ -76,7 +76,7 @@ void App::InitRender()
 	{
 		char buffer[512];
 		glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
-		std::cout << "[" __FUNCTION__ "]: Vertex Shader Error: " << buffer;
+		std::cout << "[" << __FUNCTION__ << "]: Vertex Shader Error: " << buffer;
 	}
 
 
@@ -91,7 +91,7 @@ void App::InitRender()
 	{
 		char buffer[512];
 		glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
-		std::cout << "[" __FUNCTION__ "]: Fragment Shader Error: " << buffer;
+		std::cout << "[" << __FUNCTION__ << "]: Fragment Shader Error: " << buffer;
 	}
 
 	// Create shader program
@@ -184,7 +184,7 @@ bool App::Construct(unsigned int width, unsigned int height, const char* title)
 		return false;
 	}
 	
-	m_Window.create(VideoMode(width, height),title);
+	m_Window.create(VideoMode(width, height),title, sf::Style::Default, m_ContextSettings);
 
 	
 
