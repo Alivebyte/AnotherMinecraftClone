@@ -12,8 +12,38 @@ App::App()
 void App::Run()
 {
 
-	//InitRender();
+	InitRender();
 
+	
+
+	while (m_Window.isOpen())
+	{
+		Render();
+
+		m_Window.display();
+
+		Event event;
+		while (m_Window.pollEvent(event))
+		{
+			if (event.type == Event::Closed)
+			{
+				m_Window.close();
+			}
+
+			if (event.type == Event::Resized)
+			{
+				glViewport(0, 0, event.size.width, event.size.height);
+			}
+		}
+
+		//Render();
+		
+	}
+}
+
+
+void App::InitRender()
+{
 	// Basic shader 
 	const char* vertexSource = R"glsl(
 		#version 120
@@ -100,23 +130,23 @@ void App::Run()
 
 	// Generate Vertex Buffer Object(VBO)
 	// Generate vertex array object
-	GLuint VBO, EBO, VAO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-	glBindVertexArray(VAO);
+	//GLuint VBO, EBO, VAO;
+	glGenVertexArrays(1, &m_VAO);
+	glGenBuffers(1, &m_VBO);
+	glGenBuffers(1, &m_EBO);
+	glBindVertexArray(m_VAO);
 	// Bind VBO to the Array Buffer
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
 
 	// Push vertex data do Array Buffer using Static Draw
 	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	// Add vertex array attribute to the position in the shader
 	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
-	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
 	// Enable vertex attribute
 	glEnableVertexAttribArray(posAttrib);
@@ -128,52 +158,22 @@ void App::Run()
 	// VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
 	//glBindVertexArray(0);
 
-
-	while (m_Window.isOpen())
-	{
-		glClearColor(0.1f, 0.5f, 0.8f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		
-		glUseProgram(shaderProgram);
-
-
-		glBindVertexArray(VAO);
-
-		//glDrawArrays(GL_TRIANGLES, 0, 6);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-		m_Window.display();
-
-		Event event;
-		while (m_Window.pollEvent(event))
-		{
-			if (event.type == Event::Closed)
-			{
-				m_Window.close();
-			}
-
-			if (event.type == Event::Resized)
-			{
-				glViewport(0, 0, event.size.width, event.size.height);
-			}
-		}
-
-		//Render();
-		
-	}
-}
-
-
-void App::InitRender()
-{
-	
 	
 
 }
 void App::Render()
 {
-	
+	glClearColor(0.1f, 0.5f, 0.8f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+	glUseProgram(m_ShaderProgram);
+
+
+	glBindVertexArray(m_VAO);
+
+	//glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
 bool App::Init()
