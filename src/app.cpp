@@ -8,23 +8,6 @@ App::App()
 }
 
 
-
-void* GetAnyGLFuncAddress(const char* name)
-{
-	void* p = (void*)wglGetProcAddress(name);
-	if (p == 0 ||
-		(p == (void*)0x1) || (p == (void*)0x2) || (p == (void*)0x3) ||
-		(p == (void*)-1))
-	{
-		HMODULE module = LoadLibraryA("opengl32.dll");
-		if(module)
-			p = (void*)GetProcAddress(module, name);
-	}
-
-	return p;
-}
-
-
 void App::Run()
 {
 
@@ -180,7 +163,9 @@ void App::Render()
 
 bool App::Init()
 {
-	if (!gladLoadGLLoader((GLADloadproc)GetAnyGLFuncAddress))
+	sf::Context context;
+
+	if (!gladLoadGLLoader((GLADloadproc)context.getFunction))//GetAnyGLFuncAddress))
 	{
 		std::cout << "GLAD did not initialize" << std::endl;	
 
@@ -193,15 +178,15 @@ bool App::Init()
 
 bool App::Construct(unsigned int width, unsigned int height, const char* title)
 {
-	
-	
-	m_Window.create(VideoMode(width, height),title);
-
 	if (!Init())
 	{
 		std::cout << "[" << __FUNCTION__ << "]: Couldn't init!" << std::endl;
 		return false;
 	}
+	
+	m_Window.create(VideoMode(width, height),title);
+
+	
 
 	return true;
 }
