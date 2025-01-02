@@ -17,7 +17,8 @@ void* GetAnyGLFuncAddress(const char* name)
 		(p == (void*)-1))
 	{
 		HMODULE module = LoadLibraryA("opengl32.dll");
-		p = (void*)GetProcAddress(module, name);
+		if(module)
+			p = (void*)GetProcAddress(module, name);
 	}
 
 	return p;

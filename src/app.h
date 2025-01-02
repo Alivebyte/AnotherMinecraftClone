@@ -1,11 +1,12 @@
 #ifndef APP_H
 #define APP_H
-#include "glad/glad.h"
+#include "Renderer/IRenderer.h"
 #include <SFML/Window.hpp>
-#include <SFML/OpenGL.hpp>
-#include <SFML/Graphics/Shader.hpp>
 
 using namespace sf;
+
+
+
 
 namespace amc
 {
