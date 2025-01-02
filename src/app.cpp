@@ -41,7 +41,7 @@ void App::InitRender()
 	
 	// Basic shader 
 	const char* vertexSource = R"glsl(
-		#version 120 core
+		#version 120
 
 		in vec3 position;
 
@@ -52,9 +52,9 @@ void App::InitRender()
 	)glsl";
 
 	const char* fragSource = R"glsl(
-		#version 120 core
+		#version 120
 
-		out vec4 outColor;
+		varying out vec4 outColor;
 
 		void main()
 		{
