@@ -120,11 +120,11 @@ void App::InitRender()
 
 	// Generate Vertex Buffer Object(VBO)
 	// Generate vertex array object
-	GLuint VBO, vao;
-	glGenVertexArrays(1, &vao);
+	GLuint VBO;
+	//glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &VBO);
 
-	glBindVertexArray(vao);
+	//glBindVertexArray(vao);
 	// Bind VBO to the Array Buffer
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
