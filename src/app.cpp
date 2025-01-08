@@ -14,8 +14,6 @@ void App::Run()
 
 	InitRender();
 
-	
-
 	while (m_Window.isOpen())
 	{
 		Render();
@@ -44,7 +42,7 @@ void App::Run()
 
 void App::InitRender()
 {
-	// Basic shader 
+	/*// Basic shader 
 	const char* vertexSource = R"glsl(
 		#version 120
 
@@ -64,53 +62,12 @@ void App::InitRender()
 		{
 			gl_FragColor = vec4(0.2, 0.9, 0.1, 1.0);
 		}
-	)glsl";
+	)glsl";*/
 
-	// Create vertex shader
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexSource, NULL);
+	//Shader basic;
+	basic.LoadFromFile("content/shaders/basic.vert", "content/shaders/basic.frag");
 
-	// Compile vertex shader
-	glCompileShader(vertexShader);
-
-	GLint status;
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
-
-	if (status == GL_FALSE)
-	{
-		char buffer[512];
-		glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
-		std::cout << "[" << __FUNCTION__ << "]: Vertex Shader Error: " << buffer;
-	}
-
-
-	// Create fragment shader
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragSource, NULL);
-	glCompileShader(fragmentShader);
-
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
-
-	if (status == GL_FALSE)
-	{
-		char buffer[512];
-		glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
-		std::cout << "[" << __FUNCTION__ << "]: Fragment Shader Error: " << buffer;
-	}
-
-	// Create shader program
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader); // Attaching vertex shader
-	glAttachShader(shaderProgram, fragmentShader); // Attaching fragment shader
-
-	glLinkProgram(shaderProgram);
-
-	glUseProgram(shaderProgram);
-
-	m_ShaderProgram = shaderProgram;
-	// Delete the shaders as we do not require them anymore
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	basic.Use();
 
 	float verts[] =
 	{
@@ -145,7 +102,7 @@ void App::InitRender()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	// Add vertex array attribute to the position in the shader
-	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+	GLint posAttrib = glGetAttribLocation(basic.GetProgram(), "position");
 	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
 	// Enable vertex attribute
@@ -167,13 +124,23 @@ void App::Render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-	glUseProgram(m_ShaderProgram);
+	glm::vec3 pos(0.0f, 0.0f, -2.0f);
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, pos);
+	glm::mat4 view = glm::lookAt(glm::vec3(0.0f,0.0f,0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 1.0f, 1000.0f);
+
+	basic.UniformMatrix4f("model", model);
+	basic.UniformMatrix4f("view", view);
+	basic.UniformMatrix4f("projection", projection);
+	basic.Use();
 
 
 	glBindVertexArray(m_VAO);
 
 	//glDrawArrays(GL_TRIANGLES, 0, 6);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
 }
 
 bool App::Init()

@@ -1,8 +1,12 @@
-#version 150 core
+#version 120
 
-in vec3 position;
+attribute vec3 position;
+
+uniform mat4 projection;
+uniform mat4 view;
+uniform mat4 model;
 
 void main()
 {
-	glPosition = vec4(position, 1.0);
+	gl_Position = projection * view * model * vec4(position, 1.0);
 }

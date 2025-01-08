@@ -4,15 +4,16 @@
 #include "glad/glad.h"
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
-#include <SFML/Graphics/Shader.hpp>
 
-
-// Renderer interface 
-
-class IRenderer
+namespace amc
 {
-	virtual void Init() = 0;
-	virtual void RenderLoop() = 0;
-};
+	// Purpose: Renderer interface 
+	class IRenderer
+	{
+	protected:
+		virtual void Init() = 0;
+		virtual void RenderLoop() = 0;
+	};
+}
 
 #endif

@@ -2,12 +2,11 @@
 #define APP_H
 #include "Renderer/IRenderer.h"
 #include <SFML/Window.hpp>
+#include "Shader/Shader.h"
+
 
 
 using namespace sf;
-
-
-
 
 namespace amc
 {
@@ -28,7 +27,7 @@ namespace amc
 		GLuint m_EBO;
 		GLuint m_VBO;
 		GLuint m_VAO;
-		GLuint m_ShaderProgram;
+		Shader basic;
 	};
 }
 

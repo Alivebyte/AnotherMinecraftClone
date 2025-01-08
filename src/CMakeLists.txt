@@ -10,7 +10,7 @@ file(GLOB_RECURSE MAIN_SRC
 add_executable(amc ${MAIN_SRC})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MAIN_SRC})
 target_include_directories(amc PRIVATE "${CMAKE_SOURCE_DIR}/include")
-target_link_libraries(amc PRIVATE sfml-graphics)
+target_link_libraries(amc PRIVATE sfml-graphics glm)
 target_compile_features(amc PRIVATE cxx_std_17)
 
 if(WIN32)
